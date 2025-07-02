@@ -1081,6 +1081,7 @@ font-weight: bold;
 cursor: pointer;
 display: flex;
 align-items: center;
+justify-content: center;
 gap: 10px;
 transition: background-color 0.2s ease, transform 0.1s ease, color 0.3s ease, font-family 0.3s ease;
 box-shadow: 0 3px 8px rgba(0,0,0,0.3);
@@ -2636,7 +2637,7 @@ window.sendAttachment = async function() {
                 timestamp: Date.now(),
                 seenBy: { [currentUser.uid]: true },
                 type: 'attachment', // Custom type for attachments
-                attachments: result.fileLinks // Array of {name, url, mimeType}
+                attachments: result.fileLinks // Array of {name, url, mimeType, type}
             });
             alert("Attachments sent successfully!");
             clearAttachments(); // Clear selected files after sending
@@ -2743,7 +2744,15 @@ const previewElement = document.getElementById(`latest-message-${friendUID}`);
 if (previewElement) {
     let previewText = msg.text || ''; // Default to empty string if no text
     if (msg.type === 'attachment' && msg.attachments && msg.attachments.length > 0) {
-        previewText = `Attachment: ${msg.attachments[0].name}`;
+        // Use the 'type' property from the Apps Script response
+        const firstAttachment = msg.attachments[0];
+        if (firstAttachment.type === 'image') {
+            previewText = `Image: ${firstAttachment.name}`;
+        } else if (firstAttachment.type === 'video') {
+            previewText = `Video: ${firstAttachment.name}`;
+        } else {
+            previewText = `File: ${firstAttachment.name}`;
+        }
         if (msg.attachments.length > 1) {
             previewText += ` (+${msg.attachments.length - 1} more)`;
         }
